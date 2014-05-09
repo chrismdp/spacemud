@@ -1,17 +1,15 @@
 class PlayerMover < Struct.new(:controller)
   def move(player, location_id)
     unless (destination = Location.find_by_id(location_id))
-      controller.flash[:error] = "That destination does not exist!"
-      controller.redirect_to controller.game_path
-      return
+      controller.error("That destination does not exist!")
     end
 
     if (player.location.exits.any? { |e| e.destination == destination })
       player.update_attributes!(location_id: location_id)
+      controller.success
     else
-      controller.flash[:error] = "You cannot move to that location from here"
+      controller.error("You cannot move to that location from here")
     end
-    controller.redirect_to controller.game_path
   end
 end
 
@@ -27,6 +25,15 @@ class GameController < ApplicationController
 
   def move
     PlayerMover.new(self).move(@player, params[:destination_location_id])
+  end
+
+  def error(msg)
+    flash[:error] = msg
+    redirect_to game_path
+  end
+
+  def success
+    redirect_to game_path
   end
 
   private
