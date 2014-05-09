@@ -6,6 +6,7 @@ describe GameController do
     it "returns http success" do
       get 'index'
       response.should be_success
+      assigns(:player).should be_a_new(Player)
     end
   end
 

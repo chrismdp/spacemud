@@ -46,13 +46,6 @@ describe PlayersController do
     end
   end
 
-  describe "GET new" do
-    it "assigns a new player as @player" do
-      get :new, {}, valid_session
-      assigns(:player).should be_a_new(Player)
-    end
-  end
-
   describe "GET edit" do
     it "assigns the requested player as @player" do
       player = Player.create! valid_attributes
@@ -75,9 +68,14 @@ describe PlayersController do
         assigns(:player).should be_persisted
       end
 
-      it "redirects to the created player" do
+      it "sets the session to the player id" do
         post :create, {:player => valid_attributes}, valid_session
-        response.should redirect_to(Player.last)
+        session[:player_id].should eq(Player.last.id)
+      end
+
+      it "redirects to the game" do
+        post :create, {:player => valid_attributes}, valid_session
+        response.should redirect_to(game_path)
       end
     end
 

@@ -12,11 +12,6 @@ class PlayersController < ApplicationController
   def show
   end
 
-  # GET /players/new
-  def new
-    @player = Player.new
-  end
-
   # GET /players/1/edit
   def edit
   end
@@ -28,7 +23,8 @@ class PlayersController < ApplicationController
 
     respond_to do |format|
       if @player.save
-        format.html { redirect_to @player, notice: 'Player was successfully created.' }
+        session[:player_id] = @player.id
+        format.html { redirect_to game_path, notice: 'Player was successfully created.' }
         format.json { render :show, status: :created, location: @player }
       else
         format.html { render :new }

@@ -1,9 +1,8 @@
 Rails.application.routes.draw do
-  get 'game/index'
+  root 'game#index'
 
-  get 'game/game'
-
-  get 'game/move'
+  get '/game' => 'game#game', as: :game
+  get '/game/move' => 'game#move', as: :move
 
   resources :exits
 
