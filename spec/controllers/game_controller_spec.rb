@@ -37,7 +37,7 @@ describe GameController do
 
     it 'moves the player to the new location' do
       post 'move', {destination_location_id: destination.id}, {player_id: player.id}
-      assigns(:player).location_id.should eq(destination.id)
+      assigns(:player).reload.location_id.should eq(destination.id)
     end
 
     it 'redirects to the game again' do
@@ -50,5 +50,4 @@ describe GameController do
       assigns(:player).location_id.should eq(1)
     end
   end
-
 end

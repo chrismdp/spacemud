@@ -1,19 +1,18 @@
-class PlayerMover < Struct.new(:web, :websockets, :database)
-  def move(player, destination)
-    unless (destination)
-      web.error("That destination does not exist!")
-      return
-    end
+MovedPlayer = Struct.new(:player)
+MoveError = Struct.new(:player)
 
+module Reactor
+  def process(change)
+    send(change.class.to_s.underscore, change)
+  end
+end
+
+class PlayerMover
+  def move(player, destination)
     if (player.can_move_to?(destination))
-      player = player.move_to(destination)
-      web.success(player)
-      websockets.success(player)
-      database.success(player)
+      MovedPlayer.new(player.move_to(destination))
     else
-      web.error(player)
-      websockets.error(player)
-      database.error(player)
+      MoveError.new(player)
     end
   end
 end
@@ -29,39 +28,44 @@ class GameController < ApplicationController
   end
 
   class FileLogger
+    include Reactor
+
     def initialize(log)
       # could be any other service
       @file = File.open(log, "w+")
     end
 
-    def success(player)
-      @file.puts("#{player.name} moved to #{player.location.name}")
+    def moved_player(change)
+      @file.puts("#{change.player.name} moved to #{change.player.location.name}")
       @file.flush
     end
 
-    def error(player)
-      @file.puts("ERROR: #{player.name} smacked his head on a wall")
+    def move_error(change)
+      @file.puts("ERROR: #{change.player.name} smacked his head on a wall")
       @file.flush
     end
   end
 
   class Database
-    def success(player)
-      player.save!
+    include Reactor
+
+    def moved_player(change)
+      change.player.save!
     end
 
-    def error(player)
+    def move_error(change)
     end
   end
 
   class WebHandler < Struct.new(:controller)
-    def error(player)
+    include Reactor
+
+    def move_error(change)
       controller.flash[:error] = "You cannot move to that location from here"
       controller.redirect_to controller.game_path
     end
 
-    def success(player)
-      controller.instance_variable_set(:@player, player)
+    def moved_player(change)
       controller.redirect_to controller.game_path
     end
   end
@@ -71,7 +75,10 @@ class GameController < ApplicationController
     database = Database.new
     web = WebHandler.new(self)
 
-    PlayerMover.new(web, movelog, database).move(@player, Location.find_by_id(params[:destination_location_id]))
+    change = PlayerMover.new.move(@player, Location.find_by_id(params[:destination_location_id]))
+    database.process(change)
+    movelog.process(change)
+    web.process(change)
   end
 
   private
