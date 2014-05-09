@@ -5,7 +5,7 @@ class Player < ActiveRecord::Base
     location.can_move_to?(destination)
   end
 
-  def move_to!(destination)
-    update_attribute(:location_id, destination.id)
+  def move_to(destination)
+    clone.tap { |player| player.location_id = destination.id }
   end
 end

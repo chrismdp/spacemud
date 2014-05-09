@@ -1,17 +1,19 @@
-class PlayerMover < Struct.new(:controller, :websockets)
+class PlayerMover < Struct.new(:web, :websockets, :database)
   def move(player, destination)
     unless (destination)
-      controller.error("That destination does not exist!")
+      web.error("That destination does not exist!")
       return
     end
 
     if (player.can_move_to?(destination))
-      player.move_to!(destination)
-      controller.success
+      player = player.move_to(destination)
+      web.success(player)
       websockets.success("#{player.name} moved to #{destination.name}")
+      database.success(player)
     else
-      controller.error("You cannot move to that location from here")
+      web.error("You cannot move to that location from here")
       websockets.error("#{player.name} smacked his head on a wall")
+      database.error(player)
     end
   end
 end
@@ -43,18 +45,33 @@ class GameController < ApplicationController
     end
   end
 
+  class Database
+    def success(player)
+      player.save!
+    end
+
+    def error(player)
+    end
+  end
+
+  class WebHandler < Struct.new(:controller)
+    def error(msg)
+      controller.flash[:error] = msg
+      controller.redirect_to controller.game_path
+    end
+
+    def success(player)
+      controller.instance_variable_set(:@player, player)
+      controller.redirect_to controller.game_path
+    end
+  end
+
   def move
     movelog = FileLogger.new("move.log")
-    PlayerMover.new(self, movelog).move(@player, Location.find_by_id(params[:destination_location_id]))
-  end
+    database = Database.new
+    web = WebHandler.new(self)
 
-  def error(msg)
-    flash[:error] = msg
-    redirect_to game_path
-  end
-
-  def success
-    redirect_to game_path
+    PlayerMover.new(web, movelog, database).move(@player, Location.find_by_id(params[:destination_location_id]))
   end
 
   private
