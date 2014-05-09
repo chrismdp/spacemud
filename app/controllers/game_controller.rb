@@ -8,11 +8,11 @@ class PlayerMover < Struct.new(:web, :websockets, :database)
     if (player.can_move_to?(destination))
       player = player.move_to(destination)
       web.success(player)
-      websockets.success("#{player.name} moved to #{destination.name}")
+      websockets.success(player)
       database.success(player)
     else
-      web.error("You cannot move to that location from here")
-      websockets.error("#{player.name} smacked his head on a wall")
+      web.error(player)
+      websockets.error(player)
       database.error(player)
     end
   end
@@ -34,13 +34,13 @@ class GameController < ApplicationController
       @file = File.open(log, "w+")
     end
 
-    def success(msg)
-      @file.puts(msg)
+    def success(player)
+      @file.puts("#{player.name} moved to #{player.location.name}")
       @file.flush
     end
 
-    def error(msg)
-      @file.puts "ERROR: #{msg}"
+    def error(player)
+      @file.puts("ERROR: #{player.name} smacked his head on a wall")
       @file.flush
     end
   end
@@ -55,8 +55,8 @@ class GameController < ApplicationController
   end
 
   class WebHandler < Struct.new(:controller)
-    def error(msg)
-      controller.flash[:error] = msg
+    def error(player)
+      controller.flash[:error] = "You cannot move to that location from here"
       controller.redirect_to controller.game_path
     end
 
