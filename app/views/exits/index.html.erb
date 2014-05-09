@@ -1,0 +1,27 @@
+<h1>Listing exits</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Location</th>
+      <th>Destination location</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @exits.each do |exit| %>
+      <tr>
+        <td><%= exit.location_id %></td>
+        <td><%= exit.destination_location_id %></td>
+        <td><%= link_to 'Show', exit %></td>
+        <td><%= link_to 'Edit', edit_exit_path(exit) %></td>
+        <td><%= link_to 'Destroy', exit, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Exit', new_exit_path %>

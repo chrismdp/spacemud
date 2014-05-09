@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Location:</strong>
+  <%= @exit.location_id %>
+</p>
+
+<p>
+  <strong>Destination location:</strong>
+  <%= @exit.destination_location_id %>
+</p>
+
+<%= link_to 'Edit', edit_exit_path(@exit) %> |
+<%= link_to 'Back', exits_path %>
