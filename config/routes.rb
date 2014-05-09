@@ -1,4 +1,10 @@
 Rails.application.routes.draw do
+  get 'game/index'
+
+  get 'game/game'
+
+  get 'game/move'
+
   resources :exits
 
   resources :locations
