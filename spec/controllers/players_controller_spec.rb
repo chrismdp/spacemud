@@ -68,6 +68,11 @@ describe PlayersController do
         assigns(:player).should be_persisted
       end
 
+      it "hardcodes the location to 1" do
+        post :create, {:player => valid_attributes}, valid_session
+        assigns(:player).location_id.should == 1
+      end
+
       it "sets the session to the player id" do
         post :create, {:player => valid_attributes}, valid_session
         session[:player_id].should eq(Player.last.id)

@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   root 'game#index'
 
   get '/game' => 'game#game', as: :game
-  get '/game/move' => 'game#move', as: :move
+  post '/game/move' => 'game#move', as: :move
 
   resources :exits
 

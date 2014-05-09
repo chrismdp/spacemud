@@ -2,9 +2,18 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+$spacemud-primary: #296fa6;
+
 $body-bg: #111;
 $text-color: #eee;
 $input-color: #111;
+$jumbotron-bg: $spacemud-primary;
+$nav-bg: $spacemud-primary;
+$navbar-default-color: #eee;
+$navbar-default-link-color: #eee;
+$navbar-default-link-active-color: #eee;
+$navbar-default-bg: $spacemud-primary;
+$jumbotron-color: #eee;
 
 @import "bootstrap";
 @import "bootstrap/theme";

@@ -1,2 +1,40 @@
-<h1>Game#game</h1>
-<p>Find me in app/views/game/game.html.erb</p>
+<br/>
+<div class='container'>
+  <div class="navbar navbar-default" role="navigation">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Space MUD</a>
+      </div>
+      <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+          <li class="active"><%= link_to "Player: " + @player.name, @player %></li>
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div><!--/.container-fluid -->
+  </div>
+
+  <% if (flash[:error]) %>
+    <div class='alert alert-danger'><%= flash[:error] %></div>
+  <% end -%>
+
+  <div class='jumbotron'>
+    <h3><%= @player.location.name %></h3>
+    <p><%= @player.location.description %></p>
+    <p>Move to:</p>
+    <div>
+      <%- @player.location.exits.each do |exit| %>
+        <%= form_tag move_path do %>
+          <button type="submit" role="button" name="destination_location_id" value="<%= exit.destination_location_id %>" class="btn btn-default"><%= exit.destination.name %></button>
+        <% end -%>
+        <br/>
+      <% end -%>
+    </div>
+  </div>
+
+</div>
