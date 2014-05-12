@@ -1,11 +1,7 @@
 class Player < ActiveRecord::Base
   belongs_to :location
 
-  def can_move_to?(destination)
-    location.can_move_to?(destination)
-  end
-
-  def move_to(destination)
-    clone.tap { |player| player.location_id = destination.id }
+  def domain_object
+    Domain::Player.new(id, name, age, location.domain_object)
   end
 end

@@ -50,7 +50,7 @@ class GameController < ApplicationController
     include Reactor
 
     def moved_player(change)
-      change.player.save!
+      Player.update(change.player.id, location_id: change.player.location.id)
     end
 
     def move_error(change)
@@ -74,8 +74,10 @@ class GameController < ApplicationController
     movelog = FileLogger.new("move.log")
     database = Database.new
     web = WebHandler.new(self)
+    player = @player.domain_object
+    location = Location.find_by_id(params[:destination_location_id]).domain_object
 
-    change = PlayerMover.new.move(@player, Location.find_by_id(params[:destination_location_id]))
+    change = PlayerMover.new.move(player, location)
     database.process(change)
     movelog.process(change)
     web.process(change)

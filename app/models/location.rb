@@ -1,7 +1,7 @@
 class Location < ActiveRecord::Base
   has_many :exits
 
-  def can_move_to?(destination)
-    exits.map(&:destination).include?(destination)
+  def domain_object
+    Domain::Location.new(id, name, exits.map(&:destination_location_id))
   end
 end
